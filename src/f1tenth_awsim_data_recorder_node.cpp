@@ -37,29 +37,26 @@ F1tenthAwsimDataRecorderNode::F1tenthAwsimDataRecorderNode(const rclcpp::NodeOpt
   trajectory_sub_.subscribe(this, trajectory_topic, qos.get_rmw_qos_profile());
 
   _synchronizer = std::make_shared<message_filters::TimeSynchronizer<
-  autoware_auto_control_msgs::msg::AckermannControlCommand,
   geometry_msgs::msg::PoseStamped,
   autoware_auto_planning_msgs::msg::Trajectory>>(
-    ackerman_sub_,
     ground_truth_topic_sub_,
     trajectory_sub_,
     10
   );
 
   _synchronizer->registerCallback(
-    std::bind(&F1tenthAwsimDataRecorderNode::SyncCallback, this, _1, _2, _3)
+    std::bind(&F1tenthAwsimDataRecorderNode::SyncCallback, this, _1, _2)
   );
 }
 
 
 void F1tenthAwsimDataRecorderNode::SyncCallback(
-    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
     const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory
   )
 {
-  RCLCPP_INFO(this->get_logger(), "Sync callback with %u, and %u as times", ackermann->stamp, ground_truth->header.stamp.sec);
-  f1tenth_awsim_data_recorder_->SaveToCsv(ackermann, ground_truth, trajectory);
+  RCLCPP_INFO(this->get_logger(), "Sync callback with %u, and %u as times", trajectory->header.stamp.sec, ground_truth->header.stamp.sec);
+  f1tenth_awsim_data_recorder_->SaveToCsv(ground_truth, trajectory);
 }
 
 }  // namespace f1tenth_awsim_data_recorder

@@ -24,7 +24,6 @@ F1tenthAwsimDataRecorder::F1tenthAwsimDataRecorder()
 }
 
 void F1tenthAwsimDataRecorder::SaveToCsv(
-    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
     const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory)
 {

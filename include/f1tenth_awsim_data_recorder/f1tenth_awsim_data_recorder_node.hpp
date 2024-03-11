@@ -38,7 +38,6 @@ private:
   F1tenthAwsimDataRecorderPtr f1tenth_awsim_data_recorder_{nullptr};
   
   std::shared_ptr<message_filters::TimeSynchronizer<
-  autoware_auto_control_msgs::msg::AckermannControlCommand,
   geometry_msgs::msg::PoseStamped,
   autoware_auto_planning_msgs::msg::Trajectory>> _synchronizer;
 
@@ -47,7 +46,6 @@ private:
   message_filters::Subscriber<autoware_auto_planning_msgs::msg::Trajectory> trajectory_sub_;
 
   void SyncCallback(
-    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
     const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory
   );
