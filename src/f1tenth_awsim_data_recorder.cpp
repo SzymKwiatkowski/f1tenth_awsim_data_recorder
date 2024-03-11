@@ -23,10 +23,11 @@ F1tenthAwsimDataRecorder::F1tenthAwsimDataRecorder()
 {
 }
 
-int64_t F1tenthAwsimDataRecorder::foo(int64_t bar) const
+void F1tenthAwsimDataRecorder::SaveToCsv(
+    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
+    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
+    const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory)
 {
-  std::cout << "Hello World, " << bar << std::endl;
-  return bar;
 }
 
 }  // namespace f1tenth_awsim_data_recorder

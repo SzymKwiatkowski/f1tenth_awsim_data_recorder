@@ -17,6 +17,11 @@
 
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
+#include "message_filters/subscriber.h"
+#include "message_filters/time_synchronizer.h"
+#include "autoware_auto_control_msgs/msg/ackermann_control_command.hpp"
+#include "autoware_auto_planning_msgs/msg/trajectory.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
 
 #include "f1tenth_awsim_data_recorder/f1tenth_awsim_data_recorder.hpp"
 
@@ -31,7 +36,21 @@ public:
 
 private:
   F1tenthAwsimDataRecorderPtr f1tenth_awsim_data_recorder_{nullptr};
-  int64_t param_name_{123};
+  
+  std::shared_ptr<message_filters::TimeSynchronizer<
+  autoware_auto_control_msgs::msg::AckermannControlCommand,
+  geometry_msgs::msg::PoseStamped,
+  autoware_auto_planning_msgs::msg::Trajectory>> _synchronizer;
+
+  message_filters::Subscriber<autoware_auto_control_msgs::msg::AckermannControlCommand> ackerman_sub_;
+  message_filters::Subscriber<geometry_msgs::msg::PoseStamped> ground_truth_topic_sub_;
+  message_filters::Subscriber<autoware_auto_planning_msgs::msg::Trajectory> trajectory_sub_;
+
+  void SyncCallback(
+    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
+    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
+    const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory
+  );
 };
 }  // namespace f1tenth_awsim_data_recorder
 

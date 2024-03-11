@@ -17,6 +17,10 @@
 
 #include <cstdint>
 
+#include "autoware_auto_control_msgs/msg/ackermann_control_command.hpp"
+#include "autoware_auto_planning_msgs/msg/trajectory.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
+
 #include "f1tenth_awsim_data_recorder/visibility_control.hpp"
 
 
@@ -27,7 +31,11 @@ class F1TENTH_AWSIM_DATA_RECORDER_PUBLIC F1tenthAwsimDataRecorder
 {
 public:
   F1tenthAwsimDataRecorder();
-  int64_t foo(int64_t bar) const;
+
+  void SaveToCsv(
+    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
+    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
+    const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory);
 };
 
 }  // namespace f1tenth_awsim_data_recorder

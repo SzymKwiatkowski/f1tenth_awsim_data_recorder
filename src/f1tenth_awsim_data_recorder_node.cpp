@@ -14,15 +14,51 @@
 
 #include "f1tenth_awsim_data_recorder/f1tenth_awsim_data_recorder_node.hpp"
 
+#include "rclcpp/qos.hpp"
+
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
+
 namespace f1tenth_awsim_data_recorder
 {
 
 F1tenthAwsimDataRecorderNode::F1tenthAwsimDataRecorderNode(const rclcpp::NodeOptions & options)
 :  Node("f1tenth_awsim_data_recorder", options)
 {
+  rclcpp::QoS qos = rclcpp::QoS(10);
   f1tenth_awsim_data_recorder_ = std::make_unique<f1tenth_awsim_data_recorder::F1tenthAwsimDataRecorder>();
-  param_name_ = this->declare_parameter("param_name", 456);
-  f1tenth_awsim_data_recorder_->foo(param_name_);
+
+  std::string ackermann_topic = declare_parameter("ackermann_topic", "/control/command/control_cmd");
+  std::string ground_truth_topic = declare_parameter("ground_truth_topic", "/awsim/ground_truth/vehicle/pose");
+  std::string trajectory_topic = declare_parameter("trajectory_topic", "/control/trajectory_follower/lateral/predicted_trajectory");
+  ackerman_sub_.subscribe(this, ackermann_topic, qos.get_rmw_qos_profile());
+  ground_truth_topic_sub_.subscribe(this, ground_truth_topic, qos.get_rmw_qos_profile());
+  trajectory_sub_.subscribe(this, trajectory_topic, qos.get_rmw_qos_profile());
+
+  _synchronizer = std::make_shared<message_filters::TimeSynchronizer<
+  autoware_auto_control_msgs::msg::AckermannControlCommand,
+  geometry_msgs::msg::PoseStamped,
+  autoware_auto_planning_msgs::msg::Trajectory>>(
+    ackerman_sub_,
+    ground_truth_topic_sub_,
+    trajectory_sub_,
+    10
+  );
+
+  _synchronizer->registerCallback(
+    std::bind(&F1tenthAwsimDataRecorderNode::SyncCallback, this, _1, _2, _3)
+  );
+}
+
+
+void F1tenthAwsimDataRecorderNode::SyncCallback(
+    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
+    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
+    const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory
+  )
+{
+  
 }
 
 }  // namespace f1tenth_awsim_data_recorder
