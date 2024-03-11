@@ -58,7 +58,8 @@ void F1tenthAwsimDataRecorderNode::SyncCallback(
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory
   )
 {
-  
+  RCLCPP_INFO(this->get_logger(), "Sync callback with %u, and %u as times", ackermann->stamp, ground_truth->header.stamp.sec);
+  f1tenth_awsim_data_recorder_->SaveToCsv(ackermann, ground_truth, trajectory);
 }
 
 }  // namespace f1tenth_awsim_data_recorder
