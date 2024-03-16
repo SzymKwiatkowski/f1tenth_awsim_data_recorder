@@ -4,7 +4,7 @@
   <name>f1tenth_awsim_data_recorder</name>
   <version>1.0.0</version>
   <description>ex</description>
-  <maintainer email="szymon.z.kwiatkowski@gmail.com">Szymon</maintainer>
+  <maintainer email="szymon.z.kwiatkowski@gmail.com">Szymon Kwiatkowski</maintainer>
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake_auto</buildtool_depend>

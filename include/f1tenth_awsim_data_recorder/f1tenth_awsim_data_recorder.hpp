@@ -1,4 +1,4 @@
-// Copyright 2024 Szymon
+// Copyright 2024 Szymon Kwiatkowski
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,13 +16,15 @@
 #define F1TENTH_AWSIM_DATA_RECORDER__F1TENTH_AWSIM_DATA_RECORDER_HPP_
 
 #include <cstdint>
+#include <fstream>
+#include <string>
+#include <stdexcept>
 
 #include "autoware_auto_control_msgs/msg/ackermann_control_command.hpp"
 #include "autoware_auto_planning_msgs/msg/trajectory.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 
 #include "f1tenth_awsim_data_recorder/visibility_control.hpp"
-
 
 namespace f1tenth_awsim_data_recorder
 {
@@ -31,15 +33,20 @@ class F1TENTH_AWSIM_DATA_RECORDER_PUBLIC F1tenthAwsimDataRecorder
 {
 public:
   F1tenthAwsimDataRecorder();
-
+  ~F1tenthAwsimDataRecorder();
   void SaveToCsv(
-    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
+    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & position,
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory);
 
   void SaveToCsv(
     const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
-    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
+    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & position,
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory);
+
+private:
+  std::ofstream _file;
+  template<typename ... Args>
+  std::string DynamicConversion(const std::string& format, Args ... args);
 };
 
 }  // namespace f1tenth_awsim_data_recorder

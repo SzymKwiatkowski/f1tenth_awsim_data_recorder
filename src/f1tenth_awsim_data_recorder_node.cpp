@@ -1,4 +1,4 @@
-// Copyright 2024 Szymon
+// Copyright 2024 Szymon Kwiatkowski
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ void F1tenthAwsimDataRecorderNode::SynchronizerCallback(
   )
 {
   RCLCPP_INFO(this->get_logger(), "Sync callback with %u, and %u as times", trajectory->header.stamp.sec, ground_truth->header.stamp.sec);
-  f1tenth_awsim_data_recorder_->SaveToCsv(ground_truth, trajectory);
+  f1tenth_awsim_data_recorder_->SaveToCsv(ackermann, ground_truth, trajectory);
 }
 
 void F1tenthAwsimDataRecorderNode::AckermannCallback(
