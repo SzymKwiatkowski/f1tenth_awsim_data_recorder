@@ -34,6 +34,9 @@ class F1TENTH_AWSIM_DATA_RECORDER_PUBLIC F1tenthAwsimDataRecorder
 public:
   F1tenthAwsimDataRecorder();
   ~F1tenthAwsimDataRecorder();
+
+  void SetMaxPoints(size_t max_points_count);
+
   void SaveToCsv(
     const geometry_msgs::msg::PoseStamped::ConstSharedPtr & position,
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory);
@@ -44,9 +47,18 @@ public:
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory);
 
 private:
+  size_t _max_point_count = 100;
   std::ofstream _file;
   template<typename ... Args>
   std::string DynamicConversion(const std::string& format, Args ... args);
+
+  std::string ConvertAckermannAndPose(
+    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
+    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & position
+  );
+  std::string ZerosForPoint();
+  std::string ConvertPoints(autoware_auto_planning_msgs::msg::TrajectoryPoint trajectory_point);
+  std::string HeaderToCsv();
 };
 
 }  // namespace f1tenth_awsim_data_recorder

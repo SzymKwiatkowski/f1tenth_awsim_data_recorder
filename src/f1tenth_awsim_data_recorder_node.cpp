@@ -28,11 +28,15 @@ F1tenthAwsimDataRecorderNode::F1tenthAwsimDataRecorderNode(const rclcpp::NodeOpt
 :  Node("f1tenth_awsim_data_recorder", options)
 {
   rclcpp::QoS qos = rclcpp::QoS(10);
-  f1tenth_awsim_data_recorder_ = std::make_unique<f1tenth_awsim_data_recorder::F1tenthAwsimDataRecorder>();
 
+  std::size_t max_points_count = declare_parameter("max_points_count", 100);
   std::string ackermann_topic = declare_parameter("ackermann_topic", "/control/command/control_cmd");
   std::string ground_truth_topic = declare_parameter("ground_truth_topic", "/awsim/ground_truth/vehicle/pose");
   std::string trajectory_topic = declare_parameter("trajectory_topic", "/control/trajectory_follower/lateral/predicted_trajectory");
+
+  f1tenth_awsim_data_recorder_ = std::make_unique<f1tenth_awsim_data_recorder::F1tenthAwsimDataRecorder>();
+  f1tenth_awsim_data_recorder_->SetMaxPoints(max_points_count);
+
   ackerman_sub_.subscribe(this, ackermann_topic, qos.get_rmw_qos_profile());
   ground_truth_topic_sub_.subscribe(this, ground_truth_topic, qos.get_rmw_qos_profile());
   trajectory_sub_.subscribe(this, trajectory_topic, qos.get_rmw_qos_profile());
@@ -50,26 +54,9 @@ F1tenthAwsimDataRecorderNode::F1tenthAwsimDataRecorderNode(const rclcpp::NodeOpt
 
   _synchronizer->setRateConfig( config );
 
-  // _synchronizer->getPolicy()->setMaxIntervalDuration(rclcpp::Duration(1, 500000));
-
   _synchronizer->registerCallback(
     std::bind(&F1tenthAwsimDataRecorderNode::SynchronizerCallback, this, _1, _2, _3)
   );
-
-  // ackerman_sub_.registerCallback(
-  //   std::bind(&F1tenthAwsimDataRecorderNode::AckermannCallback, this, _3)
-  // );
-  // _time_synchronizer = std::make_shared<message_filters::TimeSynchronizer<
-  // geometry_msgs::msg::PoseStamped,
-  // autoware_auto_planning_msgs::msg::Trajectory>>(
-  //   ground_truth_topic_sub_,
-  //   trajectory_sub_,
-  //   10
-  // );
-
-  // _time_synchronizer->registerCallback(
-  //   std::bind(&F1tenthAwsimDataRecorderNode::SyncCallback, this, _1, _2)
-  // );
 }
 
 

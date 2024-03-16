@@ -22,11 +22,17 @@ namespace f1tenth_awsim_data_recorder
 F1tenthAwsimDataRecorder::F1tenthAwsimDataRecorder()
 {
     // Open file
-    _file.open ("example.csv");
+    _file.open ("data.csv");
+}
 
+void F1tenthAwsimDataRecorder::SetMaxPoints(size_t max_points_count)
+{
+    _max_point_count = max_points_count;
 
     // write columns labels
-    _file << "";
+    std::string header = HeaderToCsv();
+
+    _file << header + "\n";
 }
 
 F1tenthAwsimDataRecorder::~F1tenthAwsimDataRecorder()
@@ -45,14 +51,31 @@ void F1tenthAwsimDataRecorder::SaveToCsv(
     const geometry_msgs::msg::PoseStamped::ConstSharedPtr & position,
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory)
 {
-    // _file << "This is the first cell in the first column.\n";
-    // _file << "a,b,c,\n";
-    // _file << "c,s,v,\n";
-    // _file << "1,2,3.456\n";
-    // _file << "semi;colon";
+    std::string result_to_write = ConvertAckermannAndPose(ackermann, position);
 
-    std::string result_to_write = DynamicConversion(
-        "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u \n",
+    for (size_t i=0; i < _max_point_count; i++)
+    {
+        if (i < trajectory->points.size())
+        {
+            std::string pointConversion = ConvertPoints(trajectory->points[i]);
+
+            result_to_write+=pointConversion;
+        }
+        else
+        {
+            result_to_write+=ZerosForPoint();
+        }
+    }
+
+    _file << result_to_write + " \n"; // append endline to start from new row
+}
+
+std::string F1tenthAwsimDataRecorder::ConvertAckermannAndPose(
+    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr &ackermann,
+    const geometry_msgs::msg::PoseStamped::ConstSharedPtr &position)
+{
+    std::string ackermann_pose_converted = DynamicConversion(
+        "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
         ackermann->lateral.steering_tire_angle,
         ackermann->lateral.steering_tire_rotation_rate,
         ackermann->longitudinal.acceleration,
@@ -64,10 +87,91 @@ void F1tenthAwsimDataRecorder::SaveToCsv(
         position->pose.orientation.x,
         position->pose.orientation.y,
         position->pose.orientation.z,
-        position->pose.orientation.w,
-        trajectory->points.max_size());
+        position->pose.orientation.w);
+    
+    return ackermann_pose_converted;
+}
 
-    _file << result_to_write;
+std::string F1tenthAwsimDataRecorder::ZerosForPoint()
+{
+    return DynamicConversion(
+                ", %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            );
+}
+
+std::string F1tenthAwsimDataRecorder::ConvertPoints(autoware_auto_planning_msgs::msg::TrajectoryPoint trajectory_point)
+{
+    std::string pointConversion = DynamicConversion(
+                ", %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
+                trajectory_point.acceleration_mps2,
+                trajectory_point.front_wheel_angle_rad,
+                trajectory_point.heading_rate_rps,
+                trajectory_point.lateral_velocity_mps,
+                trajectory_point.longitudinal_velocity_mps,
+                trajectory_point.rear_wheel_angle_rad,
+                trajectory_point.pose.position.x,
+                trajectory_point.pose.position.y,
+                trajectory_point.pose.position.z,
+                trajectory_point.pose.orientation.x,
+                trajectory_point.pose.orientation.y,
+                trajectory_point.pose.orientation.z,
+                trajectory_point.pose.orientation.w
+            );
+
+    return pointConversion;
+}
+
+std::string F1tenthAwsimDataRecorder::HeaderToCsv()
+{
+    std::string base_header = "steering_tire_angle, steering_tire_rotation_rate, acceleration, speed, jerk, pose_x, pose_y, pose_z, orientation_x, orientation_y, orientation_z, orientation_w";
+
+    for (size_t i=0; i < _max_point_count; i++)
+    {
+        base_header += DynamicConversion(
+                ", point_%i_acceleration_mps2, \
+                point_%i_front_wheel_angle_rad, \
+                point_%i_heading_rate_rps, \
+                point_%i_lateral_velocity_mps, \
+                point_%i_longitudinal_velocity_mps, \
+                point_%i_rear_wheel_angle_rad, \
+                point_%i_pos_x, \
+                point_%i_pos_y, \
+                point_%i_pos_z, \
+                point_%i_orientation_x, \
+                point_%i_orientation_y, \
+                point_%i_orientation_z, \
+                point_%i_orientation_w",
+                i,
+                i,
+                i,
+                i,
+                i,
+                i,
+                i,
+                i,
+                i,
+                i,
+                i,
+                i,
+                i,
+                i
+            );
+    }
+
+    return base_header;
 }
 
 template<typename ... Args>
