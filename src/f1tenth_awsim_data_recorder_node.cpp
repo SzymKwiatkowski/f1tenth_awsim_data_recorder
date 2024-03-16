@@ -19,6 +19,7 @@
 using std::placeholders::_1;
 using std::placeholders::_2;
 using std::placeholders::_3;
+using namespace std::chrono_literals;
 
 namespace f1tenth_awsim_data_recorder
 {
@@ -36,17 +37,39 @@ F1tenthAwsimDataRecorderNode::F1tenthAwsimDataRecorderNode(const rclcpp::NodeOpt
   ground_truth_topic_sub_.subscribe(this, ground_truth_topic, qos.get_rmw_qos_profile());
   trajectory_sub_.subscribe(this, trajectory_topic, qos.get_rmw_qos_profile());
 
-  _synchronizer = std::make_shared<message_filters::TimeSynchronizer<
-  geometry_msgs::msg::PoseStamped,
-  autoware_auto_planning_msgs::msg::Trajectory>>(
+  _synchronizer = std::make_shared<LatestSynchronizer>(
+    lastest_policy(this->get_clock()),
+    ackerman_sub_,
     ground_truth_topic_sub_,
-    trajectory_sub_,
-    10
+    trajectory_sub_
   );
 
-  _synchronizer->registerCallback(
-    std::bind(&F1tenthAwsimDataRecorderNode::SyncCallback, this, _1, _2)
+  std::tuple<double, double, double> config = std::tuple<double, double, double>(
+    1, 1, 0
   );
+
+  _synchronizer->setRateConfig( config );
+
+  // _synchronizer->getPolicy()->setMaxIntervalDuration(rclcpp::Duration(1, 500000));
+
+  _synchronizer->registerCallback(
+    std::bind(&F1tenthAwsimDataRecorderNode::SynchronizerCallback, this, _1, _2, _3)
+  );
+
+  // ackerman_sub_.registerCallback(
+  //   std::bind(&F1tenthAwsimDataRecorderNode::AckermannCallback, this, _3)
+  // );
+  // _time_synchronizer = std::make_shared<message_filters::TimeSynchronizer<
+  // geometry_msgs::msg::PoseStamped,
+  // autoware_auto_planning_msgs::msg::Trajectory>>(
+  //   ground_truth_topic_sub_,
+  //   trajectory_sub_,
+  //   10
+  // );
+
+  // _time_synchronizer->registerCallback(
+  //   std::bind(&F1tenthAwsimDataRecorderNode::SyncCallback, this, _1, _2)
+  // );
 }
 
 
@@ -57,6 +80,23 @@ void F1tenthAwsimDataRecorderNode::SyncCallback(
 {
   RCLCPP_INFO(this->get_logger(), "Sync callback with %u, and %u as times", trajectory->header.stamp.sec, ground_truth->header.stamp.sec);
   f1tenth_awsim_data_recorder_->SaveToCsv(ground_truth, trajectory);
+}
+
+void F1tenthAwsimDataRecorderNode::SynchronizerCallback(
+    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
+    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
+    const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory
+  )
+{
+  RCLCPP_INFO(this->get_logger(), "Sync callback with %u, and %u as times", trajectory->header.stamp.sec, ground_truth->header.stamp.sec);
+  f1tenth_awsim_data_recorder_->SaveToCsv(ground_truth, trajectory);
+}
+
+void F1tenthAwsimDataRecorderNode::AckermannCallback(
+    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann
+  )
+{
+  RCLCPP_INFO(this->get_logger(), "Sync callback with %u", ackermann->stamp.sec);
 }
 
 }  // namespace f1tenth_awsim_data_recorder

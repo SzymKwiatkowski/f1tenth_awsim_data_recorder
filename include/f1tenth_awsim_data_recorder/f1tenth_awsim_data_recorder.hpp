@@ -35,6 +35,11 @@ public:
   void SaveToCsv(
     const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory);
+
+  void SaveToCsv(
+    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
+    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
+    const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory);
 };
 
 }  // namespace f1tenth_awsim_data_recorder
