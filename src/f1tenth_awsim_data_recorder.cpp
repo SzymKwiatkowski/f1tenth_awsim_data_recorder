@@ -75,7 +75,7 @@ std::string F1tenthAwsimDataRecorder::ConvertAckermannAndPose(
     const geometry_msgs::msg::PoseStamped::ConstSharedPtr &position)
 {
     std::string ackermann_pose_converted = DynamicConversion(
-        "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
+        "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
         ackermann->lateral.steering_tire_angle,
         ackermann->lateral.steering_tire_rotation_rate,
         ackermann->longitudinal.acceleration,
@@ -95,7 +95,7 @@ std::string F1tenthAwsimDataRecorder::ConvertAckermannAndPose(
 std::string F1tenthAwsimDataRecorder::ZerosForPoint()
 {
     return DynamicConversion(
-                ", %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
+                ",%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
                 0.0,
                 0.0,
                 0.0,
@@ -115,7 +115,7 @@ std::string F1tenthAwsimDataRecorder::ZerosForPoint()
 std::string F1tenthAwsimDataRecorder::ConvertPoints(autoware_auto_planning_msgs::msg::TrajectoryPoint trajectory_point)
 {
     std::string pointConversion = DynamicConversion(
-                ", %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
+                ",%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
                 trajectory_point.acceleration_mps2,
                 trajectory_point.front_wheel_angle_rad,
                 trajectory_point.heading_rate_rps,
@@ -136,24 +136,12 @@ std::string F1tenthAwsimDataRecorder::ConvertPoints(autoware_auto_planning_msgs:
 
 std::string F1tenthAwsimDataRecorder::HeaderToCsv()
 {
-    std::string base_header = "steering_tire_angle, steering_tire_rotation_rate, acceleration, speed, jerk, pose_x, pose_y, pose_z, orientation_x, orientation_y, orientation_z, orientation_w";
+    std::string base_header = "steering_tire_angle,steering_tire_rotation_rate,acceleration,speed,jerk,pose_x,pose_y,pose_z,orientation_x,orientation_y,orientation_z,orientation_w";
 
     for (size_t i=0; i < _max_point_count; i++)
     {
         base_header += DynamicConversion(
-                ", point_%i_acceleration_mps2, \
-                point_%i_front_wheel_angle_rad, \
-                point_%i_heading_rate_rps, \
-                point_%i_lateral_velocity_mps, \
-                point_%i_longitudinal_velocity_mps, \
-                point_%i_rear_wheel_angle_rad, \
-                point_%i_pos_x, \
-                point_%i_pos_y, \
-                point_%i_pos_z, \
-                point_%i_orientation_x, \
-                point_%i_orientation_y, \
-                point_%i_orientation_z, \
-                point_%i_orientation_w",
+                ",point_%i_acceleration_mps2,point_%i_front_wheel_angle_rad,point_%i_heading_rate_rps,point_%i_lateral_velocity_mps,point_%i_longitudinal_velocity_mps,point_%i_rear_wheel_angle_rad,point_%i_pos_x,point_%i_pos_y,point_%i_pos_z,point_%i_orientation_x,point_%i_orientation_y,point_%i_orientation_z,point_%i_orientation_w",
                 i,
                 i,
                 i,
