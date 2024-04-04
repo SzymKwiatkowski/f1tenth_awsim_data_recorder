@@ -3,4 +3,4 @@
     max_points_count: 8 # Max points count being saved from trajectory topic
     ackermann_topic: "/control/command/control_cmd"
     ground_truth_topic: "/awsim/ground_truth/vehicle/pose"
-    trajectory_topic:  "/control/trajectory_follower/lateral/predicted_trajectory"
+    trajectory_topic:  "/control/racing_planner/trajectory"

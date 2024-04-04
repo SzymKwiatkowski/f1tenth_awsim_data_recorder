@@ -23,35 +23,12 @@ colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_E
 ros2 launch f1tenth_awsim_data_recorder f1tenth_awsim_data_recorder.launch.py
 ```
 
-## API
-<!-- Required -->
-<!-- Things to consider:
-    - How do you use the package / API? -->
-
-### Input
-
-| Name         | Type                  | Description  |
-| ------------ | --------------------- | ------------ |
-| `topic_name` | std_msgs::msg::String | Sample desc. |
-
-### Output
-
-| Name         | Type                  | Description  |
-| ------------ | --------------------- | ------------ |
-| `topic_name` | std_msgs::msg::String | Sample desc. |
-
-### Services and Actions
-
-| Name           | Type                   | Description  |
-| -------------- | ---------------------- | ------------ |
-| `service_name` | std_srvs::srv::Trigger | Sample desc. |
-
 ### Parameters
-
+Used via `f1tenth_awsim_data_recorder.param.yaml` file in config directory.
 | Name         | Type | Description  |
 | ------------ | ---- | ------------ |
-| `param_name` | int  | Sample desc. |
+| max_points_count | int  | Maximum count of points saved (remaining if path is shorter then specified amount it is filled with 0) |
+| ackermann_topic | string | Sample desc. |
+| ground_truth_topic | string | Sample desc. |
+| trajectory_topic | string | Sample desc. |
 
-
-## References / External links
-<!-- Optional -->

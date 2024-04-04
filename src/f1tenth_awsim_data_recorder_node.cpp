@@ -32,7 +32,7 @@ F1tenthAwsimDataRecorderNode::F1tenthAwsimDataRecorderNode(const rclcpp::NodeOpt
   std::size_t max_points_count = declare_parameter("max_points_count", 100);
   std::string ackermann_topic = declare_parameter("ackermann_topic", "/control/command/control_cmd");
   std::string ground_truth_topic = declare_parameter("ground_truth_topic", "/awsim/ground_truth/vehicle/pose");
-  std::string trajectory_topic = declare_parameter("trajectory_topic", "/control/trajectory_follower/lateral/predicted_trajectory");
+  std::string trajectory_topic = declare_parameter("trajectory_topic", "/control/racing_planner/trajectory");
 
   f1tenth_awsim_data_recorder_ = std::make_unique<f1tenth_awsim_data_recorder::F1tenthAwsimDataRecorder>();
   f1tenth_awsim_data_recorder_->SetMaxPoints(max_points_count);
