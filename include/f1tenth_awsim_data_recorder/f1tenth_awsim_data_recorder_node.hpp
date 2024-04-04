@@ -63,19 +63,10 @@ private:
   message_filters::Subscriber<geometry_msgs::msg::PoseStamped> ground_truth_topic_sub_;
   message_filters::Subscriber<autoware_auto_planning_msgs::msg::Trajectory> trajectory_sub_;
 
-  void SyncCallback(
-    const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
-    const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory
-  );
-
   void SynchronizerCallback(
     const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
     const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory
-  );
-
-  void AckermannCallback(
-    const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann
   );
 };
 }  // namespace f1tenth_awsim_data_recorder
