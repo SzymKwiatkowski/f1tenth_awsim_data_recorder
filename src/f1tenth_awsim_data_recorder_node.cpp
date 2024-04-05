@@ -31,8 +31,14 @@ F1tenthAwsimDataRecorderNode::F1tenthAwsimDataRecorderNode(const rclcpp::NodeOpt
 
   std::size_t max_points_count = declare_parameter("max_points_count", 100);
   std::string ackermann_topic = declare_parameter("ackermann_topic", "/control/command/control_cmd");
-  std::string ground_truth_topic = declare_parameter("ground_truth_topic", "/awsim/ground_truth/vehicle/pose");
-  std::string trajectory_topic = declare_parameter("trajectory_topic", "/control/racing_planner/trajectory");
+  std::string ground_truth_topic = declare_parameter("ground_truth_topic", "/localization/cartographer/pose");
+  std::string trajectory_topic = declare_parameter("trajectory_topic", "/planning/racing_planner/trajectory");
+
+  RCLCPP_INFO(this->get_logger(), 
+              "Ackermann topic: %s, Localization topic: %s, Trajectory topic: %s", 
+              ackermann_topic.c_str(), 
+              ground_truth_topic.c_str(), 
+              trajectory_topic.c_str());
 
   f1tenth_awsim_data_recorder_ = std::make_unique<f1tenth_awsim_data_recorder::F1tenthAwsimDataRecorder>();
   f1tenth_awsim_data_recorder_->SetMaxPoints(max_points_count);
@@ -57,6 +63,9 @@ F1tenthAwsimDataRecorderNode::F1tenthAwsimDataRecorderNode(const rclcpp::NodeOpt
   _synchronizer->registerCallback(
     std::bind(&F1tenthAwsimDataRecorderNode::SynchronizerCallback, this, _1, _2, _3)
   );
+
+  RCLCPP_INFO(this->get_logger(), 
+              "Waiting for topics!");
 }
 
 void F1tenthAwsimDataRecorderNode::SynchronizerCallback(
@@ -65,7 +74,7 @@ void F1tenthAwsimDataRecorderNode::SynchronizerCallback(
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory
   )
 {
-  RCLCPP_INFO(this->get_logger(), "Trajectory count: %lu", trajectory->points.size());
+  // RCLCPP_INFO(this->get_logger(), "Trajectory count: %lu", trajectory->points.size());
   f1tenth_awsim_data_recorder_->SaveToCsv(ackermann, ground_truth, trajectory);
 }
 

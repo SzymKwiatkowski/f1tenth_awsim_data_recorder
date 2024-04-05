@@ -1,6 +1,6 @@
 /**:
   ros__parameters:
-    max_points_count: 8 # Max points count being saved from trajectory topic
+    max_points_count: 271 # Max points count being saved from trajectory topic
     ackermann_topic: "/control/command/control_cmd"
-    ground_truth_topic: "/awsim/ground_truth/vehicle/pose"
-    trajectory_topic:  "/control/racing_planner/trajectory"
+    ground_truth_topic: "/localization/cartographer/pose"
+    trajectory_topic:  "/planning/racing_planner/trajectory"
