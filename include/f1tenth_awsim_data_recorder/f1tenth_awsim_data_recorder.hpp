@@ -48,7 +48,9 @@ public:
 
 private:
   size_t _max_point_count = 100;
+  bool _race_track_saved = false;
   std::ofstream _file;
+  std::ofstream _race_track;
   template<typename ... Args>
   std::string DynamicConversion(const std::string& format, Args ... args);
 
@@ -59,6 +61,7 @@ private:
   std::string ZerosForPoint();
   std::string ConvertPoints(autoware_auto_planning_msgs::msg::TrajectoryPoint trajectory_point);
   std::string HeaderToCsv();
+  std::string PointsHeaderToCsv();
 };
 
 }  // namespace f1tenth_awsim_data_recorder
