@@ -24,7 +24,10 @@
 #include "message_filters/sync_policies/approximate_time.h"
 #include "autoware_auto_control_msgs/msg/ackermann_control_command.hpp"
 #include "autoware_auto_planning_msgs/msg/trajectory.hpp"
+#include "autoware_auto_vehicle_msgs/msg/gear_command.hpp"
+#include "autoware_adapi_v1_msgs/msg/operation_mode_state.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
+
 
 #include "f1tenth_awsim_data_recorder/f1tenth_awsim_data_recorder.hpp"
 
@@ -52,13 +55,13 @@ public:
 
 private:
   F1tenthAwsimDataRecorderPtr f1tenth_awsim_data_recorder_{nullptr};
-  
-  std::shared_ptr<message_filters::TimeSynchronizer<
-  geometry_msgs::msg::PoseStamped,
-  autoware_auto_planning_msgs::msg::Trajectory>> _time_synchronizer;
 
+  bool recording_active = false;
   std::shared_ptr<LatestSynchronizer> _synchronizer;
+  std::shared_ptr<LatestSynchronizer> _carStateSynchronizer;
 
+  message_filters::Subscriber<autoware_adapi_v1_msgs::msg::OperationModeState> mode_state_sub_;
+  message_filters::Subscriber<autoware_auto_vehicle_msgs::msg::GearCommand> gear_command_sub_;
   message_filters::Subscriber<autoware_auto_control_msgs::msg::AckermannControlCommand> ackerman_sub_;
   message_filters::Subscriber<geometry_msgs::msg::PoseStamped> ground_truth_topic_sub_;
   message_filters::Subscriber<autoware_auto_planning_msgs::msg::Trajectory> trajectory_sub_;
@@ -67,6 +70,11 @@ private:
     const autoware_auto_control_msgs::msg::AckermannControlCommand::ConstSharedPtr & ackermann,
     const geometry_msgs::msg::PoseStamped::ConstSharedPtr & ground_truth,
     const autoware_auto_planning_msgs::msg::Trajectory::ConstSharedPtr & trajectory
+  );
+
+  void VehicleStateCallback(
+    const autoware_adapi_v1_msgs::msg::OperationModeState::ConstSharedPtr & operation_mode,
+    const autoware_auto_vehicle_msgs::msg::GearCommand::ConstSharedPtr & gear_cmd
   );
 };
 }  // namespace f1tenth_awsim_data_recorder
