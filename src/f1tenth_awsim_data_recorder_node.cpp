@@ -63,8 +63,8 @@ F1tenthAwsimDataRecorderNode::F1tenthAwsimDataRecorderNode(const rclcpp::NodeOpt
     trajectory_sub_
   );
 
-  _carStateSynchronizer = std::make_shared<LatestSynchronizer>(
-    lastest_policy(this->get_clock()),
+  _carStateSynchronizer = std::make_shared<LatestSynchronizerv2>(
+    lastest_policyv2(this->get_clock()),
     mode_state_sub_,
     gear_command_sub_
   );

@@ -40,7 +40,13 @@ autoware_auto_control_msgs::msg::AckermannControlCommand,
 geometry_msgs::msg::PoseStamped,
 autoware_auto_planning_msgs::msg::Trajectory> lastest_policy;
 
+typedef message_filters::sync_policies::LatestTime<
+autoware_adapi_v1_msgs::msg::OperationModeState,
+autoware_auto_vehicle_msgs::msg::GearCommand> lastest_policyv2;
+
 typedef message_filters::Synchronizer<lastest_policy> LatestSynchronizer;
+
+typedef message_filters::Synchronizer<lastest_policyv2> LatestSynchronizerv2;
 
 typedef message_filters::sync_policies::ApproximateTime<
 geometry_msgs::msg::PoseStamped,
@@ -58,7 +64,7 @@ private:
 
   bool recording_active = false;
   std::shared_ptr<LatestSynchronizer> _synchronizer;
-  std::shared_ptr<LatestSynchronizer> _carStateSynchronizer;
+  std::shared_ptr<LatestSynchronizerv2> _carStateSynchronizer;
 
   message_filters::Subscriber<autoware_adapi_v1_msgs::msg::OperationModeState> mode_state_sub_;
   message_filters::Subscriber<autoware_auto_vehicle_msgs::msg::GearCommand> gear_command_sub_;
